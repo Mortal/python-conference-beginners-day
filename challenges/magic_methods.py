@@ -50,6 +50,9 @@ class CardDeck:
     def __len__(self):
         return len(self._cards)
 
+    def __getitem__(self, i):
+        return self._cards[i]
+
 
 
 """
