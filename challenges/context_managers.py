@@ -9,6 +9,10 @@ some functions to only being called once at a time.
 Let's say we use a tempfile to hold the lock:
 '''
 
+import os
+import tempfile
+
+
 def hold_lock():
     filename = tempfile.NamedTemporaryFile(delete=False).name
     with open(filename, 'w') as f:
@@ -45,17 +49,34 @@ to the lock file, for debugging purposes, when they're
 '''
 
 
-
+import tempfile
+import contextlib
 from datetime import datetime
 
+
+@contextlib.contextmanager
+def there_can_be_only_one():
+    lock_name = hold_lock()
+    with open(lock_name, 'a') as fp:
+        def log(msg, *args):
+            if args:
+                msg = msg % args
+            print(msg, file=fp)
+
+        yield log
+    release_lock(lock_name)
+
+
 def my_program():
-    main_screen_turn_on()
-    if somebody_set_us_up_the_bomb():
-        take_off_every_zig()
+    with there_can_be_only_one() as log:
+        main_screen_turn_on()
+        log("We get %s!", 'signal')
+        if somebody_set_us_up_the_bomb():
+            take_off_every_zig()
+
 
 def main_screen_turn_on():
     print('\n'.join(['*' * 80] * 25))
-
 
 
 def somebody_set_us_up_the_bomb():
@@ -70,3 +91,6 @@ def take_off_every_zig():
             raise Exception('all your base!')
         print('Go {}! '.format(i), end='')
 
+
+if __name__ == "__main__":
+    my_program()

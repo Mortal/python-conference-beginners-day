@@ -35,3 +35,28 @@ Find out how to use a generator to make a version of getlines that is "lazy"
 More info here: http://anandology.com/python-practice-book/iterators.html
 """
 
+
+import operator
+
+
+def enumlines(filenames):
+    for fn in filenames:
+        with open(fn) as f:
+            yield from enumerate(f)
+
+
+def getlines(filenames):
+    return map(operator.itemgetter(1), enumlines(filenames))
+
+
+def head(max_lines, filenames):
+    for ix, line in enumlines(filenames):
+        if ix >= max_lines:
+            continue
+        print(line, end='')
+
+
+def grep(needle, filenames):
+    for line in getlines(filenames):
+        if needle in line:
+            print(line, end='')
