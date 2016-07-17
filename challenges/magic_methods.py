@@ -72,14 +72,39 @@ And its essential features are the coefficients of each power of x
 in this example, power-2=2, power-1=-1, power-0=7
 
 Credit to Moshe Goldstein
+
+    >>> I = Polynomial([1])
+    >>> print(I)
+    1
+    >>> X = Polynomial([0, 1])
+    >>> print(X)
+    x
+    >>> print(Polynomial([3, 2, 1]))
+    x^2 + 2x + 3
 """
 
 class Polynomial:
     def __init__(self, coefficients):
-        pass  # TODO
+        self._coeff = list(coefficients)
+
+    @classmethod
+    def monomial(cls, exponent):
+        fixed = ['', 'x']
+        try:
+            return fixed[exponent]
+        except IndexError:
+            return 'x^%d' % exponent
+
+    @classmethod
+    def term(cls, exponent, coefficient):
+        if coefficient == 1:
+            return cls.monomial(exponent)
+        else:
+            return '%s%s' % (coefficient, cls.monomial(exponent))
 
     def __str__(self):
-        pass  # TODO
+        terms = [self.term(i, c) for i, c in enumerate(self._coeff) if c]
+        return " + ".join(reversed(terms))
 
     def __add__(self, poly):
         '''returns the result of adding poly from self'''
