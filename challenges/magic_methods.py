@@ -1,7 +1,5 @@
 # coding=utf8
 
-from __future__ import unicode_literals
-
 """
 Challenge:  the Pythonic card deck class
 
@@ -21,7 +19,12 @@ following three standard functions work:
     A♣
     >>> random.choice(deck) in list(deck)
     True
+    >>> random.choice(deck) in deck
+    True
+    >>> iter(deck)  # doctest:+ELLIPSIS
+    <iterator object at 0x...>
     >>> random.shuffle(deck)
+    >>> deck[42] = 'bla'
 
 Tip:
 If you have lines in the docstring (this string) that look like interactive
@@ -35,6 +38,8 @@ See: https://docs.python.org/3/library/doctest.html
 Credit to Luciano Ramalho and his excellent book Fluent Python, from which
 I stole this example.
 """
+from __future__ import unicode_literals
+
 
 from numbers import Number
 import math
