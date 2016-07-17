@@ -47,6 +47,9 @@ class CardDeck:
             for rank in self.ranks
         ]
 
+    def __len__(self):
+        return len(self._cards)
+
 
 
 """
