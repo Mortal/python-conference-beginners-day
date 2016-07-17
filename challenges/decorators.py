@@ -14,24 +14,57 @@ of the function
 
 """
 
+import time
+import functools
 from datetime import datetime
+
+
+def timed(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        t1 = time.time()
+        ret = fn(*args, **kwargs)
+        t2 = time.time()
+        print("%s() took %.4f s" % (type(fn).__name__, t2 - t1))
+        return ret
+
+    return wrapper
+
+
+def repeat(*, times, until_value):
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            for i in range(times):
+                ret = fn(*args, **kwargs)
+                if ret == until_value:
+                    return ret
+            return ret
+
+        return wrapper
+
+    return decorator
+
 
 def my_program():
     main_screen_turn_on()
     if somebody_set_us_up_the_bomb():
         take_off_every_zig()
 
+
 def main_screen_turn_on():
     print('\n'.join(['*' * 80] * 25))
 
 
-
+@timed
+@repeat(times=100, until_value=True)
 def somebody_set_us_up_the_bomb():
     if datetime.now().microsecond % 7 == 0:
         return True
     return False
 
 
+@timed
 def take_off_every_zig():
     for i in range(1, 10001):
         print('Go {}! '.format(i), end='')
@@ -65,3 +98,6 @@ library; in particular at functools.wraps function, which is a very useful
 decorator to help you building your own decorators.
 """
 
+
+if __name__ == "__main__":
+    my_program()
