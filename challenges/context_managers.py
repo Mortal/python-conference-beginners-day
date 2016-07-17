@@ -9,6 +9,10 @@ some functions to only being called once at a time.
 Let's say we use a tempfile to hold the lock:
 '''
 
+import os
+import tempfile
+
+
 def hold_lock():
     filename = tempfile.NamedTemporaryFile(delete=False).name
     with open(filename, 'w') as f:
