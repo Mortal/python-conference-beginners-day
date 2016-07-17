@@ -53,6 +53,9 @@ class CardDeck:
     def __getitem__(self, i):
         return self._cards[i]
 
+    def __setitem__(self, i, v):
+        self._cards[i] = v
+
 
 
 """
