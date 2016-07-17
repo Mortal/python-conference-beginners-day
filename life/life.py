@@ -6,6 +6,7 @@ import numpy as np
 
 try:
     from numba import jit, njit
+    # raise ImportError()
 except ImportError:
     def jit(f):
         return f
@@ -22,14 +23,25 @@ def step(scene, counts):
      [0 1 0]
      [0 0 0]]
     >>> scene = np.array([
-    ...     [0, 0, 0, 0, 0],
-    ...     [0, 0, 1, 0, 0],
-    ...     [0, 0, 0, 1, 0],
-    ...     [0, 1, 1, 1, 0],
-    ...     [0, 0, 0, 0, 0],
-    ...     [0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 1, 0, 0, 0],
+    ...     [0, 0, 0, 1, 0, 0],
+    ...     [0, 1, 1, 1, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0],
     ... ], dtype=np.uint8)
-    >>> step(scene, np.zeros(3, dtype=np.uint8))
+    >>> np.sum(scene) == 5
+    True
+    >>> step(scene, np.zeros(6, dtype=np.uint8))
+    >>> np.sum(scene) == 5
+    True
+    >>> step(scene, np.zeros(6, dtype=np.uint8))
+    >>> np.sum(scene) == 5
+    True
+    >>> step(scene, np.zeros(6, dtype=np.uint8))
+    >>> np.sum(scene) == 5
+    True
+    >>> step(scene, np.zeros(6, dtype=np.uint8))
     >>> np.sum(scene) == 5
     True
     """
@@ -74,7 +86,7 @@ def curses_wrapper(func):
 
 
 @curses_wrapper
-def loop(stdscr):
+def loop(stdscr, times):
     n, m = stdscr.getmaxyx()
 
     scene = np.random.randint(0, 2, (n-1, m-1), np.uint8)
@@ -100,12 +112,26 @@ def loop(stdscr):
                     stdscr.addch('.')
         stdscr.refresh()
 
+    @jit
+    def step_draw(scene, counts, n):
+        for i in range(n):
+            draw()
+            step(scene, counts)
+
     counts = np.zeros(scene.shape[1], dtype=np.uint8)
+    t1 = time.time()
     while True:
-        draw()
-        step(scene, counts)
-        # time.sleep(0.2)
+        step_draw(scene, counts, 100)
+        t2 = time.time()
+        times.append(t2 - t1)
+        t1 = t2
 
 
 if __name__ == "__main__":
-    loop()
+    times = []
+    try:
+        loop(times)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print(times)
